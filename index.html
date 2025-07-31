@@ -61,6 +61,27 @@
       font-style: italic;
       color: #ccc;
     }
+    .speakers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      margin-top: 0.5em;
+    }
+    .speaker {
+      text-align: center;
+    }
+    .speaker img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #e53935;
+    }
+    .speaker span {
+      display: block;
+      font-size: 0.8em;
+      color: #ccc;
+    }
     @media (min-width: 600px) {
       body { font-size: 18px; }
     }
@@ -100,6 +121,25 @@
             div.appendChild(title);
             div.appendChild(time);
             if (ev.description) div.appendChild(desc);
+
+            if (ev.speakers && ev.speakers.length) {
+              const wrap = document.createElement('div');
+              wrap.className = 'speakers';
+              ev.speakers.forEach(sp => {
+                const sdiv = document.createElement('div');
+                sdiv.className = 'speaker';
+                const img = document.createElement('img');
+                img.src = sp.media;
+                img.alt = sp.name;
+                const name = document.createElement('span');
+                name.textContent = sp.name;
+                sdiv.appendChild(img);
+                sdiv.appendChild(name);
+                wrap.appendChild(sdiv);
+              });
+              div.appendChild(wrap);
+            }
+
             daySec.appendChild(div);
           });
           container.appendChild(daySec);
