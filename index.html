@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Sauce Schedule</title>
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+    header {
+      text-align: center;
+      padding: 1em;
+      background: #000;
+    }
+    h1 {
+      font-family: 'Metal Mania', cursive;
+      color: #e53935;
+      margin: 0 0 0.5em 0;
+      font-size: 2.5em;
+    }
+    a.button {
+      display: inline-block;
+      margin-top: 0.5em;
+      padding: 0.5em 1em;
+      background: #e53935;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    section {
+      padding: 1em;
+    }
+    section h2 {
+      font-family: 'Metal Mania', cursive;
+      color: #e53935;
+      font-size: 2em;
+      margin-top: 1em;
+      border-bottom: 1px solid #444;
+    }
+    .event {
+      margin: 0.5em 0 1.5em 0;
+      padding-bottom: 1em;
+      border-bottom: 1px dashed #444;
+    }
+    .event h3 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #fff;
+    }
+    .time {
+      color: #ff9800;
+      font-weight: bold;
+    }
+    .where {
+      font-style: italic;
+      color: #ccc;
+    }
+    .speakers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      margin-top: 0.5em;
+    }
+    .speaker {
+      text-align: center;
+    }
+    .speaker img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #e53935;
+    }
+    .speaker span {
+      display: block;
+      font-size: 0.8em;
+      color: #ccc;
+    }
+    @media (min-width: 600px) {
+      body { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Open Sauce 2025</h1>
+    <a class="button" href="schedule.ics" download>Download Schedule (ICS)</a>
+  </header>
+  <div id="schedule"></div>
+  <script>
+    fetch('schedule.json')
+      .then(res => res.json())
+      .then(data => {
+        const days = [
+          ['friday', 'Friday July 25'],
+          ['saturday', 'Saturday July 26'],
+          ['sunday', 'Sunday July 27']
+        ];
+        const container = document.getElementById('schedule');
+        days.forEach(([key, label]) => {
+          const daySec = document.createElement('section');
+          const h2 = document.createElement('h2');
+          h2.textContent = label;
+          daySec.appendChild(h2);
+          (data[key] || []).forEach(ev => {
+            const div = document.createElement('div');
+            div.className = 'event';
+            const title = document.createElement('h3');
+            title.textContent = ev.title;
+            const time = document.createElement('div');
+            time.className = 'time';
+            time.textContent = `${ev.time} \u2013 ${ev.where}`;
+            const desc = document.createElement('p');
+            desc.textContent = ev.description || '';
+            div.appendChild(title);
+            div.appendChild(time);
+            if (ev.description) div.appendChild(desc);
+
+            if (ev.speakers && ev.speakers.length) {
+              const wrap = document.createElement('div');
+              wrap.className = 'speakers';
+              ev.speakers.forEach(sp => {
+                const sdiv = document.createElement('div');
+                sdiv.className = 'speaker';
+                const img = document.createElement('img');
+                img.src = sp.media;
+                img.alt = sp.name;
+                const name = document.createElement('span');
+                name.textContent = sp.name;
+                sdiv.appendChild(img);
+                sdiv.appendChild(name);
+                wrap.appendChild(sdiv);
+              });
+              div.appendChild(wrap);
+            }
+
+            daySec.appendChild(div);
+          });
+          container.appendChild(daySec);
+        });
+      });
+  </script>
+</body>
+</html>
